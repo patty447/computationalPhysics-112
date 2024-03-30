@@ -27,7 +27,7 @@ Author: Kuo-Chuan Pan, NTHU 2022.10.06
 For the course, computational physics
 
 """
-def solve_ivp(func, t_span, y0, method, t_eval, args):
+def solve_ivp(derive_func, t_span, y0, method, t_eval, args):
     """
     Solve Initial Value Problems. 
 
@@ -49,10 +49,15 @@ def solve_ivp(func, t_span, y0, method, t_eval, args):
     """
 
     sol  = np.zeros((len(y0),len(t_eval))) # define the shape of the solution
+    y=y0
+    sol[0,0]=y0[0]
+    sol[1,0]=y0[1]
 
-    #
-    # TODO:
-    #
+    for n in range(1,len(t_span)):
+        dt=t_span[n]-t_span[n-1]
+        y=_update(derive_func,y,dt,t_span,method,*args)
+        sol[0,n]=y[0]
+        sol[1,n]=y[1]
 
     return sol
 
@@ -89,12 +94,10 @@ def _update_euler(derive_func,y0,dt,t,*args):
     :return: the next step solution y
 
     """
+    yder=derive_func(t,y0,*args)
+    ynext=y0+yder*dt
 
-    #
-    # TODO:
-    #
-
-    return y0 # <- change here. just a placeholder
+    return ynext 
 
 def _update_rk2(derive_func,y0,dt,t,*args):
     """
@@ -103,11 +106,11 @@ def _update_rk2(derive_func,y0,dt,t,*args):
     :return: the next step solution y
     """
 
-    #
-    # TODO:
-    #
+    k1=derive_func(t,y0,*args)
+    k2=derive_func(t+dt,y0+dt*k1,*args)
+    ynext=y0+dt/2 *(k1+k2)
 
-    return y0 # <- change here. just a placeholder
+    return ynext # <- change here. just a placeholder
 
 def _update_rk4(derive_func,y0,dt,t,*args):
     """
@@ -116,11 +119,13 @@ def _update_rk4(derive_func,y0,dt,t,*args):
     :return: the next step solution y
     """
 
-    #
-    # TODO:
-    #
+    k1=derive_func(t,y0,*args)
+    k2=derive_func(t+dt/2,y0+dt/2 *k1,*args)
+    k3=derive_func(t+dt/2,y0+dt/2 *k2,*args)
+    k4=derive_func(t+dt,y0+dt*k3,*args)
+    ynext=y0+dt/6 *(k1+2*k2+2*k3+k4)
 
-    return y0 # <- change here. just a placeholder
+    return ynext # <- change here. just a placeholder
 
 if __name__=='__main__':
 
