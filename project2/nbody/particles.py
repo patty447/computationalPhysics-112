@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+import os
 
 class Particles:
     """
@@ -15,37 +15,6 @@ class Particles:
         self._accelerations=np.zeros((N,3))
         self._tags=np.arange(N)
         self.time=0
-        return
-    
-    def output(self,filename):
-        """
-        Out[ut particle properties to a text file.
-        """
-        np.savetxt(filename)
-        
-        return
-    
-    def draw(self,dim=2):
-        if dim==2:
-            plt.scatter(self.positions[:,0],self.positions[:,1])
-            plt.xlabel('x')
-            plt.ylabel('y')
-            plt.title('Random Position')
-            plt.grid(True)
-            plt.show()
-            
-        elif dim==3:
-            fig = plt.figure()
-            ax = fig.add_subplot(111, projection='3d')
-            plt.scatter(self.positions[:,0],self.positions[:,1],self.positions[:,2])
-            ax.set_xlabel("x")
-            ax.set_ylabel("y")
-            ax.set_zlabel("z")
-            plt.title('Random Position')
-            plt.grid(True)
-            plt.show()  
-        else:
-            print('Cannot draw.')  
         return
     
     @property
@@ -109,3 +78,58 @@ class Particles:
         return
     
 
+    def set_particles(self,pos,vel,acc):
+        self.positions=pos
+        self.velocities=vel
+        self.accelerations=acc
+        return
+    
+    def add_particles(self,add_particles,mass,pos,vel,acc):
+        self.nparticles=self.nparticles+add_particles
+        self.masses=np.vstack((self.masses,mass))
+        self.positions=np.vstack((self.positions,pos))
+        self.velocities=np.vstack((self.velocities,vel))
+        self.accelerations=np.vstack((self.accelerations,acc))
+        self.tags=np.arange(self.nparticles)
+        return
+        
+    
+    def output(self,filename):
+        masses=self.masses
+        pos=self.positions
+        vel=self.velocities
+        acc=self.accelerations
+        tags=self.tags
+        
+        header = 'tag           mass      x position   y position   z position   x velocity   y velocity   z velocity x acceleration y acceleration z acceleration'
+
+        fmt = '%-12s %-12.8f %-12.8f %-12.8f %-12.8f %-12.8f %-12.8f %-12.8f %-12.8f %-12.8f %-12.8f'
+
+        np.savetxt(filename,np.c_[tags[:],masses[:,0]
+                                  ,pos[:,0],pos[:,1],pos[:,2]
+                                  ,vel[:,0],vel[:,1],vel[:,2]
+                                  ,acc[:,0],acc[:,1],acc[:,2]],fmt=fmt,header=header)
+        return
+    
+    def draw(self,dim=2):
+        if dim==2:
+            plt.scatter(self.positions[:,0],self.positions[:,1])
+            plt.xlabel('x')
+            plt.ylabel('y')
+            plt.title('Random Position')
+            plt.grid(True)
+            plt.show()
+            
+        elif dim==3:
+            fig = plt.figure()
+            plt.scatter(self.positions[:,0],self.positions[:,1],self.positions[:,2])
+            plt.xlabel('x')
+            plt.ylabel('y')
+            plt.title('Random Position')
+            plt.grid(True)
+            plt.show()  
+        else:
+            print('Cannot draw.')  
+        return
+    
+    
