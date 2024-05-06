@@ -23,7 +23,7 @@ class NBodySimulator:
 
     def setup(self, G=1,
                     rsoft=0.01,
-                    method="RK4",
+                    method="Euler",
                     io_freq=10,
                     io_header="nbody",
                     io_screen=True,
@@ -82,10 +82,13 @@ class NBodySimulator:
         nsteps=int(np.ceil(tmax/dt))
         
         # create a folder for output data
-        folder='data_'+str(self.io_header)
-        folder_path='./'+str(folder)
-        os.makedirs(folder_path,exist_ok=True)
+        # folder='data_'+str(self.io_header)
+        # folder_path='./'+str(folder)
+        # os.makedirs(folder_path,exist_ok=True)
         
+        io_folder = "data_"+self.io_header
+        Path(io_folder).mkdir(parents=True, exist_ok=True)
+
         
         
         for n in range(nsteps):
@@ -96,19 +99,14 @@ class NBodySimulator:
             
             if n%self.io_freq==0:
                 print('step=',n,'time=',time)
-                filename=header+'_'+str(n).zfill(6)
-                file_path = os.path.join(folder_path, filename)
-                
-                
-                
+            # filename=header+'_'+str(n).zfill(6)
+            # file_path = os.path.join(folder_path, filename)
+                fn = self.io_header+"_"+str(n).zfill(6)+".dat"
+                fn = io_folder+"/"+fn
+                particles.output(fn)  
+                                  
             time=time+dt
             
-
-
-
-
-
-
         print("Simulation is done!")
         return
 
@@ -121,9 +119,6 @@ class NBodySimulator:
         G=self.G
         rsoft=self.rsoft
         accelerations=_calculate_acceleration_kernel(nparticles,masses,positions,accelerations,G,rsoft)
-
-
-
 
         return accelerations
         
