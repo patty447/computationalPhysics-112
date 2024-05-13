@@ -21,9 +21,15 @@ def solveLowerTriangular(L,b):
     """
     n  = len(b)
     x  = np.zeros(n)
-
-    # TODO
+    bs=np.copy(b) # backup of b
     
+    for j in range(n):
+        if L[j,j]==0:
+            raise ValueError('Matrix is singular.')
+        else:
+            x[j]=bs[j]/L[j,j]
+            for i in range(j+1,n):
+                bs[i]=bs[i]-L[i,j]*x[j]    
     return x
 
 
@@ -41,9 +47,17 @@ def solveUpperTriangular(U,b):
     """
     n  = len(b)
     x  = np.zeros(n)
- 
-    # TODO
+    bs=np.copy(b)
+     
     
+
+    for j in range(n-1,-1,-1):
+        if U[j,j]==0:
+            raise ValueError('Matrix is singular.')
+        else:
+            x[j]=bs[j]/U[j,j]
+            for i in range(j):
+                bs[i]=bs[i]-U[i,j]*x[j]         
     return x
 
 
@@ -60,10 +74,25 @@ def lu(A):
 
     """
     n  = len(A)
-    L  = np.zeros((n,n))
+    L  = np.identity(n)
     U  = np.zeros((n,n))
-
-    # TODO
+    M=np.zeros((n,n))
+    As=np.copy(A)
+    
+    for k in range(n):
+        if As[k,k]==0:
+            raise ValueError('Pivot is singular.')
+        else:
+            for i in range(k+1,n):
+                M[i,k]=As[i,k]/As[k,k]
+                
+            for j in range(k+1,n):
+                for i in range(k+1,n):
+                    As[i,j]=As[i,j]-M[i,k]*As[k,j]
+    
+    for i in range(n):
+        L[i,:i]=M[i,:i]
+        U[i,i:]=As[i,i:]
     
     return L, U
 
@@ -83,7 +112,9 @@ def lu_solve(A,b):
 
     x = np.zeros(len(b))
 
-    # TODO
+    L,U=lu(A)
+    y=solveLowerTriangular(L,b)
+    x=solveUpperTriangular(U,y)   
 
 
     return x

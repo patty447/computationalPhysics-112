@@ -76,7 +76,7 @@ def lu(A):
 
     """
     n  = len(A)
-    L  = np.identity(n)
+    L  = np.zeros((n,n))
     U  = np.zeros((n,n))
     M  = np.zeros((n,n))
     As = np.copy(A)
